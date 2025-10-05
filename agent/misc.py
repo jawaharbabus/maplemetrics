@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class FinancialAgentOutput(BaseModel):
@@ -6,8 +6,8 @@ class FinancialAgentOutput(BaseModel):
     insights_summary: Optional[str] = Field(
         None, description="Optional insights summary based on user needs"
     )
-    charting_url: Optional[HttpUrl] = Field(
-        None, description="Optional URL pointing to generated charts"
+    charting_url: Optional[str] = Field(
+        None, description="Optional URL pointing to generated charts (as string)"
     )
 
     class Config:
