@@ -29,7 +29,7 @@ async def main():
 })
     tools = await client.get_tools()
     model = ChatOpenAI(
-        model="gpt-5",
+        model="gpt-5-mini",
         api_key=os.getenv("OPENAI_KEY")
     )
     agent = create_react_agent(
@@ -40,7 +40,7 @@ async def main():
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
     # Example query: ask agent to make a chart
-    resp = await agent_executor.ainvoke({
+    resp = await agent.ainvoke({
         "messages": [
             {
                 "role": "user",
