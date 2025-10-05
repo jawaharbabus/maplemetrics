@@ -35,8 +35,8 @@ class FinancialAgent:
         model_name: str = "gpt-5",
         max_context_tokens: int = 2000,
         max_summary_tokens: int = 1000,
-        enable_yfinance: bool = False,
-        enable_tavily: bool = False,
+        enable_yfinance: bool = True,
+        enable_tavily: bool = True,
     ):
         logger.info("🚀 Initializing FinancialAgent...")
         logger.info(f"📊 Model: {model_name}")
@@ -135,17 +135,35 @@ class FinancialAgent:
             await self.initialize()
 
         config = {"configurable": {"thread_id": thread_id}}
+        
+        # Enhanced prompt to force tool usage when charts are mentioned
+        enhanced_prompt = user_prompt
+        if any(word in user_prompt.lower() for word in ['chart', 'graph', 'visual', 'plot', 'show me']):
+            enhanced_prompt = f"""{user_prompt}
+
+IMPORTANT: You MUST use the charting tool to create visualizations. Do not just describe what could be done - actually call the charting tool and provide the URL in your response."""
 
         try:
             logger.info("🤖 Invoking agent...")
             response = await self.agent.ainvoke(
-                {"messages": [{"role":"system","content":system_prompt},{"role": "user", "content": user_prompt}]},
+                {"messages": [{"role":"system","content":system_prompt},{"role": "user", "content": enhanced_prompt}]},
                 config=config,
             )
             
             # Log the response
             if response and "messages" in response:
                 logger.info(f"📨 Received {len(response['messages'])} messages")
+                
+                # Log tool calls if any
+                for i, msg in enumerate(response["messages"]):
+                    msg_type = getattr(msg, 'type', 'unknown')
+                    if msg_type == 'ai' and hasattr(msg, 'tool_calls') and msg.tool_calls:
+                        logger.info(f"   🔧 AI Message {i} used {len(msg.tool_calls)} tool(s):")
+                        for tc in msg.tool_calls:
+                            logger.info(f"      - {tc.get('name', 'unknown')} with args: {tc.get('args', {})}")
+                    elif msg_type == 'tool':
+                        logger.info(f"   📊 Tool Message {i}: {getattr(msg, 'name', 'unknown')}")
+                
                 final_message = response["messages"][-1]
                 logger.info(f"✅ AGENT RESPONSE:")
                 logger.info(f"   Role: {getattr(final_message, 'type', 'unknown')}")
@@ -203,8 +221,11 @@ class FinancialAgent:
         """Closes the MCP client gracefully."""
         logger.info("🔌 Closing MCP client connections...")
         if self.client:
-            await self.client.aclose()
-            logger.info("✅ MCP client closed")
+            try:
+                await self.client.close()
+                logger.info("✅ MCP client closed")
+            except Exception as e:
+                logger.warning(f"⚠️ Error closing MCP client: {e}")
 
 
 # === Example Usage ===
