@@ -1,13 +1,23 @@
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, Field
 from typing import Optional
 
+
 class FinancialAgentOutput(BaseModel):
-    user_output: str = Field(..., description="Main output from the agent (mandatory)")
-    insights_summary: Optional[str] = Field(
-        None, description="Optional insights summary based on user needs"
+    """Structured output for the Financial Agent responses."""
+    
+    user_output: str = Field(
+        ..., 
+        description="The main response content for the user (mandatory)"
     )
-    charting_url: Optional[HttpUrl] = Field(
-        None, description="Optional URL pointing to generated charts"
+    
+    insights_summary: Optional[str] = Field(
+        None, 
+        description="Key insights, analysis, or summary from the response (optional)"
+    )
+    
+    charting_url: Optional[str] = Field(
+        None, 
+        description="URL of any generated charts or visualizations (optional)"
     )
 
     class Config:
@@ -37,10 +47,12 @@ The final response should be in JSON format matching the FinancialAgentOutput sc
 """
 
 
-test_prompt = '''
+# test_prompt = '''
 
-        what company owns tylenol?? was there any major impacts on it's stock price after trump linked it with autism?? or any impacts on stock market becasue of his statments?
-        Give me the visual charts for the compariosn.
+#         what company owns tylenol?? was there any major impacts on it's stock price after trump linked it with autism?? or any impacts on stock market becasue of his statments?
+#         Give me the visual charts for the compariosn.
 
-     '''
+#      '''
 
+
+test_prompt = """test. dont tool call, just respond with correct json format"""

@@ -123,9 +123,9 @@ class FinancialAgent:
         structured_response = await structured_model.ainvoke([{"role": "user", "content": parsing_prompt}])
         return structured_response
 
-    async def aclose(self):
-        """Closes the MCP client gracefully."""
-        await self.client.aclose()
+    # async def aclose(self):
+    #     """Closes the MCP client gracefully."""
+    #     await self.client.aclose()
 
 
 # === Example Usage ===
@@ -136,13 +136,13 @@ if __name__ == "__main__":
         agent = FinancialAgent()
         
         # Test regular invoke
-        response = await agent.invoke(test_prompt)
-        print("Regular response:", response)
+        # response = await agent.invoke(test_prompt)
+        # print("Regular response:", response)
         
         # Test structured invoke
         structured_response = await agent.invoke_structured(test_prompt)
         print("Structured response:", structured_response)
         
-        await agent.aclose()
+        # await agent.aclose()
 
     asyncio.run(main())
