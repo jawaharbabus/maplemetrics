@@ -122,3 +122,19 @@ xxhash==3.6.0
 yarl==1.20.1
 yfinance==0.2.66
 zstandard==0.25.0
+# Django and REST Framework
+Django>=5.0,<6.0
+djangorestframework>=3.14.0
+django-cors-headers>=4.3.0
+
+# LangChain and AI Agent
+langchain-openai
+langchain-mcp-adapters
+langgraph
+langmem
+
+# Environment and Configuration
+python-dotenv
+
+# Async support
+httpx>=0.26.0

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapleMetrics - Financial Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .response-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .response-section.active {
+            display: block;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .response-header h3 {
+            color: #333;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .badge-error {
+            background: #ef4444;
+            color: white;
+        }
+
+        .response-content {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .insights-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        .insights-box h4 {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .chart-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .chart-link:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .examples {
+            margin-top: 20px;
+        }
+
+        .examples h4 {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .example-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .example-tag {
+            padding: 8px 12px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .example-tag:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍁 MapleMetrics</h1>
+            <p>AI-Powered Financial Analysis Agent</p>
+        </div>
+
+        <div class="card">
+            <div class="input-section">
+                <label for="prompt">Ask a financial question:</label>
+                <textarea 
+                    id="prompt" 
+                    placeholder="Example: What is Apple's current stock price and how has it performed this year?"
+                ></textarea>
+            </div>
+
+            <div class="input-section">
+                <label for="threadId">Thread ID (optional):</label>
+                <input 
+                    type="text" 
+                    id="threadId" 
+                    placeholder="Leave empty for new conversation"
+                >
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="queryAgent()">
+                    🚀 Query Agent
+                </button>
+                <button class="btn-primary" onclick="queryAgentStructured()">
+                    📊 Query with Insights
+                </button>
+                <button class="btn-secondary" onclick="clearForm()">
+                    🗑️ Clear
+                </button>
+            </div>
+
+            <div class="examples">
+                <h4>Try these examples:</h4>
+                <div class="example-tags">
+                    <span class="example-tag" onclick="setExample('What is the current price of Tesla stock?')">
+                        Tesla Stock Price
+                    </span>
+                    <span class="example-tag" onclick="setExample('Compare Apple and Microsoft stock performance over the last 6 months')">
+                        Compare Stocks
+                    </span>
+                    <span class="example-tag" onclick="setExample('Show me a chart of NVIDIA stock for the past year')">
+                        Chart Request
+                    </span>
+                    <span class="example-tag" onclick="setExample('What are the latest news about cryptocurrency?')">
+                        Crypto News
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px; color: white;">Processing your request...</p>
+        </div>
+
+        <div class="card response-section" id="responseSection">
+            <div class="response-header">
+                <h3>Response</h3>
+                <span class="badge" id="statusBadge"></span>
+            </div>
+            <div class="response-content" id="responseContent"></div>
+            <div id="insightsBox"></div>
+            <div id="chartLink"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        function setExample(text) {
+            document.getElementById('prompt').value = text;
+        }
+
+        function clearForm() {
+            document.getElementById('prompt').value = '';
+            document.getElementById('threadId').value = '';
+            document.getElementById('responseSection').classList.remove('active');
+        }
+
+        async function queryAgent() {
+            const prompt = document.getElementById('prompt').value.trim();
+            const threadId = document.getElementById('threadId').value.trim() || '1';
+
+            if (!prompt) {
+                alert('Please enter a question!');
+                return;
+            }
+
+            showLoading(true);
+            hideResponse();
+
+            try {
+                const response = await fetch(`${API_BASE}/api/agent/query/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        thread_id: threadId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResponse(data.response, 'success');
+                } else {
+                    showResponse(`Error: ${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResponse(`Network Error: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function queryAgentStructured() {
+            const prompt = document.getElementById('prompt').value.trim();
+            const threadId = document.getElementById('threadId').value.trim() || '1';
+
+            if (!prompt) {
+                alert('Please enter a question!');
+                return;
+            }
+
+            showLoading(true);
+            hideResponse();
+
+            try {
+                const response = await fetch(`${API_BASE}/api/agent/query/structured/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        thread_id: threadId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStructuredResponse(data);
+                } else {
+                    showResponse(`Error: ${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResponse(`Network Error: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            if (show) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+
+        function hideResponse() {
+            document.getElementById('responseSection').classList.remove('active');
+        }
+
+        function showResponse(content, status) {
+            const section = document.getElementById('responseSection');
+            const badge = document.getElementById('statusBadge');
+            const contentDiv = document.getElementById('responseContent');
+            
+            contentDiv.textContent = content;
+            badge.textContent = status === 'success' ? 'Success' : 'Error';
+            badge.className = `badge badge-${status}`;
+            
+            document.getElementById('insightsBox').innerHTML = '';
+            document.getElementById('chartLink').innerHTML = '';
+            
+            section.classList.add('active');
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showStructuredResponse(data) {
+            const section = document.getElementById('responseSection');
+            const badge = document.getElementById('statusBadge');
+            const contentDiv = document.getElementById('responseContent');
+            const insightsBox = document.getElementById('insightsBox');
+            const chartLink = document.getElementById('chartLink');
+            
+            contentDiv.textContent = data.user_output;
+            badge.textContent = 'Success';
+            badge.className = 'badge badge-success';
+            
+            // Show insights if available
+            if (data.insights_summary) {
+                insightsBox.innerHTML = `
+                    <div class="insights-box">
+                        <h4>💡 Key Insights</h4>
+                        <p>${data.insights_summary}</p>
+                    </div>
+                `;
+            } else {
+                insightsBox.innerHTML = '';
+            }
+            
+            // Show chart link if available
+            if (data.charting_url) {
+                chartLink.innerHTML = `
+                    <a href="${data.charting_url}" target="_blank" class="chart-link">
+                        📈 View Chart
+                    </a>
+                `;
+            } else {
+                chartLink.innerHTML = '';
+            }
+            
+            section.classList.add('active');
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
